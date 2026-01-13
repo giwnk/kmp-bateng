@@ -14,27 +14,28 @@ return new class extends Migration
         Schema::create('sdm_koperasis', function (Blueprint $table) {
             $table->id();
             $table->foreignId('koperasi_id')->constrained('koperasis')->onDelete('cascade');
-            
+
             $table->string('nama');
             $table->string('nik', 16)->unique();
             $table->enum('kategori', ['Pengurus Koperasi', 'Pengawas Koperasi', 'Anggota Koperasi']);
             $table->enum('jabatan', [
-                'Ketua', 
-                'Sekretaris', 
-                'Bendahara', 
-                'Pengawas Utama', 
+                'Ketua',
+                'Sekretaris',
+                'Bendahara',
+                'Pengawas Utama',
                 'Pengawas',
                 'Anggota',
                 'Manajer',
                 'Staff'
             ])->nullable();
-            
+
             $table->text('alamat')->nullable();
             $table->string('nomor_telepon')->nullable();
             $table->string('email')->nullable();
             $table->enum('status', ['Aktif', 'Non Aktif'])->default('Aktif');
             $table->date('tanggal_bergabung')->nullable();
-            
+            $table->string('foto')->nullable();
+
             $table->timestamps();
             $table->softDeletes();
         });
