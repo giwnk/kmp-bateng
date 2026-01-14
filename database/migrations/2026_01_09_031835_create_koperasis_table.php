@@ -15,46 +15,35 @@ return new class extends Migration
             $table->id();
             $table->foreignId('kecamatan_id')->constrained('kecamatans')->onDelete('cascade');
             $table->foreignId('desa_id')->constrained('desas')->onDelete('cascade');
-            
+
             $table->string('nama');
-            $table->string('nomor_badan_hukum')->unique()->nullable();
+            $table->string('nomor_induk')->unique();
+            $table->string('nomor_ahu')->unique();
+            $table->date('tanggal_ahu');
             $table->text('alamat');
-            
-            // Koordinat & Luas
+            $table->integer('no_telepon');
+            $table->string('email');
+            $table->string('website')->nullable();
+
+            // Koordinat
             $table->decimal('latitude', 10, 8)->nullable();
             $table->decimal('longitude', 11, 8)->nullable();
-            $table->integer('luas_lahan')->default(0)->comment('dalam m2');
-            
+
             // Data Koperasi
-            $table->integer('jumlah_anggota')->default(0);
-            $table->decimal('total_aset', 15, 2)->default(0);
-            $table->decimal('total_modal', 15, 2)->default(0);
-            
+            $table->decimal('total_simpanan_pokok', 15, 2)->default(0);
+            $table->decimal('total_simpanan_wajib', 15, 2)->default(0);
+
             // Status & Kondisi
             // UPDATE: tambah kolom status_operasional, status_sertifikat, status_pelatihan
             $table->boolean('status_operasional')->default(false)->comment('Sudah/Belum');
             $table->boolean('status_sertifikat')->default(false)->comment('Sudah/Belum');
             $table->boolean('status_pelatihan')->default(false)->comment('Sudah/Belum');
-            $table->enum('kondisi_lahan', ['Sudah Verifikasi', 'Memenuhi Syarat', 'Tahap Pembangunan', 'Belum Verifikasi'])->default('Belum Verifikasi');
-            $table->string('sumber')->nullable()->comment('BPKAD, DPMD, TNI, dll');
-            
+
             // Tahun Pembentukan
             $table->year('tahun_pembentukan')->nullable();
             $table->date('tanggal_berdiri')->nullable();
-            
-            // Kontak
-            $table->string('nomor_telepon')->nullable();
-            $table->string('email')->nullable();
-            
-            // Pengurus
-            $table->string('nama_ketua')->nullable();
-            $table->string('nama_sekretaris')->nullable();
-            $table->string('nama_bendahara')->nullable();
-            
-            // Progress Pembangunan
-            $table->decimal('progress_pembangunan', 5, 2)->default(0)->comment('dalam persen');
-            $table->text('keterangan')->nullable();
-            
+
+
             // UPDATE: Tambah kolom kolom untuk link sosial media sebgai opsi
             // Sosmed (optional)
             $table->string('link_facebook')->nullable();

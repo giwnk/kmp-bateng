@@ -15,13 +15,13 @@ return new class extends Migration
             $table->id();
             $table->foreignId('koperasi_id')->constrained('koperasis')->onDelete('cascade');
             $table->foreignId('anggota_koperasi_id')->nullable()->constrained('anggota_koperasis')->onDelete('set null');
-            
+
             $table->string('nomor_transaksi')->unique();
-            $table->enum('jenis_transaksi', ['Simpanan', 'Pinjaman', 'Angsuran', 'Penarikan', 'SHU']);
+            $table->enum('jenis_transaksi', ['Simpanan Pokok', 'Simpanan Wajib', 'Simpanan Sukarela', 'Penarikan', 'SHU']);
             $table->decimal('jumlah', 15, 2);
             $table->date('tanggal_transaksi');
             $table->text('keterangan')->nullable();
-            
+
             $table->timestamps();
         });
     }

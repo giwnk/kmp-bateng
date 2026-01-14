@@ -17,7 +17,8 @@ return new class extends Migration
 
             $table->string('nama');
             $table->string('nik', 16)->unique();
-            $table->enum('kategori', ['Pengurus Koperasi', 'Pengawas Koperasi', 'Anggota Koperasi']);
+            $table->enum('kategori', ['Pengurus Koperasi', 'Pengawas Koperasi']);
+            $table->date('tanggal_bergabung');
             $table->enum('jabatan', [
                 'Ketua',
                 'Sekretaris',
@@ -26,14 +27,13 @@ return new class extends Migration
                 'Pengawas',
                 'Anggota',
                 'Manajer',
-                'Staff'
+                'Staff',
             ])->nullable();
 
             $table->text('alamat')->nullable();
             $table->string('nomor_telepon')->nullable();
             $table->string('email')->nullable();
             $table->enum('status', ['Aktif', 'Non Aktif'])->default('Aktif');
-            $table->date('tanggal_bergabung')->nullable();
             $table->string('foto')->nullable();
 
             $table->timestamps();
