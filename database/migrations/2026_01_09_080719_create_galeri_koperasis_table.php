@@ -14,7 +14,7 @@ return new class extends Migration
         // UPDATE: tambah skema galeri koperasi
         Schema::create('galeri_koperasis', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('koperasi_id')->constrained('koperasis')->onDelete('cascade');
+            $table->foreignUuid('koperasi_id')->constrained('koperasis')->onDelete('cascade');
             $table->string('foto_path'); // Path file gambar
             $table->string('keterangan')->nullable();
             $table->timestamps();

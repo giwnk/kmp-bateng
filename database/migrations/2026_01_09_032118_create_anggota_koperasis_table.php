@@ -12,10 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('anggota_koperasis', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('koperasi_id')->constrained('koperasis')->onDelete('cascade');
-            $table->foreignId('sdm_koperasi_id')->nullable()->constrained('sdm_koperasis')->onDelete('set null');
-
+            $table->uuid('id')->primary();
+            $table->foreignUuid('koperasi_id')->constrained('koperasis')->onDelete('cascade');
             $table->string('nomor_anggota')->unique();
             $table->string('nama');
             $table->string('nik', 16);

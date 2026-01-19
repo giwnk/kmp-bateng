@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('transaksis', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('koperasi_id')->constrained('koperasis')->onDelete('cascade');
-            $table->foreignId('anggota_koperasi_id')->nullable()->constrained('anggota_koperasis')->onDelete('set null');
+            $table->uuid('id')->primary();
+            $table->foreignUuid('koperasi_id')->constrained('koperasis')->onDelete('cascade');
+            $table->foreignUuid('anggota_koperasi_id')->nullable()->constrained('anggota_koperasis')->onDelete('set null');
 
             $table->string('nomor_transaksi')->unique();
             $table->enum('jenis_transaksi', ['Simpanan Pokok', 'Simpanan Wajib', 'Simpanan Sukarela', 'Penarikan', 'SHU']);

@@ -19,7 +19,7 @@ return new class extends Migration
             // UPDATE: tambah kolom status_aktif
             $table->enum('status_aktif', ['Ya', 'Tidak'])->default('Ya'); // Buat badge 'Tidak' di screenshot
             $table->text('keterangan')->nullable();
-            $table->foreignId('koperasi_id')->onDelete('cascade');
+            $table->foreignUuid('koperasi_id')->onDelete('cascade');
             $table->timestamps();
         });
     }

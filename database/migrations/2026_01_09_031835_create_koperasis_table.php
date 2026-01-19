@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('koperasis', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->foreignId('kecamatan_id')->constrained('kecamatans')->onDelete('cascade');
             $table->foreignId('desa_id')->constrained('desas')->onDelete('cascade');
 
@@ -29,9 +29,6 @@ return new class extends Migration
             $table->decimal('latitude', 10, 8)->nullable();
             $table->decimal('longitude', 11, 8)->nullable();
 
-            // Data Koperasi
-            $table->decimal('total_simpanan_pokok', 15, 2)->default(0);
-            $table->decimal('total_simpanan_wajib', 15, 2)->default(0);
 
             // Status & Kondisi
             // UPDATE: tambah kolom status_operasional, status_sertifikat, status_pelatihan
