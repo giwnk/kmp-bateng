@@ -29,7 +29,7 @@ class UpdateLaporanBulananRequest extends FormRequest
             'total_pinjaman_wajib' => 'required|numeric|min:0',
             'total_shu' => 'required|numeric',
             'catatan' => 'nullable|string|max:225',
-            'status' => ['required', Rule::in(['Draft', 'Submitted', 'Approved'])],
+            'status' => ['required', Rule::in(['Draft', 'Submitted','Rejected', 'Approved'])],
             'jumlah_anggota_aktif' => 'nullable|integer|min:0',
         ];
     }

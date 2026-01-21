@@ -24,7 +24,7 @@ return new class extends Migration
             $table->integer('jumlah_anggota_aktif')->default(0);
 
             $table->text('catatan')->nullable();
-            $table->enum('status', ['Draft', 'Submitted', 'Approved'])->default('Draft');
+            $table->enum('status', ['Draft', 'Submitted','Rejected', 'Approved'])->default('Draft');
 
             $table->timestamps();
 
