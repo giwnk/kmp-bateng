@@ -17,4 +17,25 @@ class LaporanBulanan extends Model
     public function koperasi() {
         return $this->belongsTo(Koperasi::class);
     }
+
+    public function scopeFilter($query, array $filters){
+        $query->when($filters['bulan'] ?? null, function($query, $bulan){
+            $query->where('bulan', $bulan);
+        });
+
+        $query->when($filters['tahun'] ?? null, function($query, $tahun){
+            $query->where('tahun', $tahun);
+        });
+
+        $query->when($filters['kecamatan'] ?? null, function($query, $kecamatan){
+            $query->whereHas('koperasi', function($query) use ($kecamatan){
+                $query->where('kecamatan', $kecamatan);
+            });
+        });
+
+        $query->when($filters['status'] ?? null, function($query, $status){
+            $query->whereIn('status', $status);
+        });
+
+    }
 }

@@ -20,8 +20,25 @@ class Transaksi extends Model
         return $this->belongsTo(Koperasi::class);
     }
 
-    public function anggota() {
+    public function anggotaKoperasi() {
         return $this->belongsTo(AnggotaKoperasi::class, 'anggota_koperasi_id');
+    }
+
+    public function scopeFilter($query, array $filters) {
+    // Cari berdasarkan No Transaksi atau Nama Anggota
+        $query->when($filters['search'] ?? null, function ($query, $search) {
+            $query->where(function ($query) use ($search) {
+                $query->where('nomor_transaksi', 'like', '%' . $search . '%')
+                    ->orWhereHas('anggotaKoperasi', function ($query) use ($search) {
+                        $query->where('nama', 'like', '%' . $search . '%');
+                    });
+            });
+        });
+
+        // Tambahan: Filter berdasarkan Jenis (Simpanan/Penarikan)
+        $query->when($filters['jenis'] ?? null, function ($query, $jenis) {
+            $query->where('jenis_transaksi', $jenis);
+        });
     }
 
     protected static function booted()
