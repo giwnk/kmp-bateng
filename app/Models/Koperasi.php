@@ -49,6 +49,10 @@ class Koperasi extends Model
         return $this->hasMany(GaleriKoperasi::class);
     }
 
+    public function laporanBulanan() {
+        return $this->hasMany(LaporanBulanan::class);
+    }
+
     public function jenisUsaha(){
         return $this->belongsToMany(JenisUsaha::class, 'pilihan_jenis_usaha');
     }
