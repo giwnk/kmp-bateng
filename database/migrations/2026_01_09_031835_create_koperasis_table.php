@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('nomor_ahu')->unique();
             $table->date('tanggal_ahu');
             $table->text('alamat');
-            $table->integer('no_telepon');
+            $table->string('no_telepon',20);
             $table->string('email');
             $table->string('website')->nullable();
 
