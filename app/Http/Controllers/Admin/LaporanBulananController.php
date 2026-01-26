@@ -33,4 +33,16 @@ class LaporanBulananController extends Controller
             'listKecamatan' => $listKecamatan, // Kirim list buat isi dropdown
         ]);
     }
+
+    public function updateStatus(Request $request, LaporanBulanan $laporan){
+        $validatedData = $request->validate([
+            'status' => 'required|in:Approved,Rejected,Submitted'
+        ]);
+
+        $laporan->update([
+            'status' => $validatedData['status']
+        ]);
+
+        return back()->with('success', 'Status laporan berhasil diperbarui!');
+    }
 }
