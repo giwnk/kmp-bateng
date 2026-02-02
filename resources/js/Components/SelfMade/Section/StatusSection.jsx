@@ -10,6 +10,7 @@ export default function ({
     kecamatanOpt,
     desaOptions,
 }) {
+    
     return (
         <div className="bg-white p-6 rounded-xl shadow-sm border w-full border-gray-100 h-full">
             <h2 className="text-lg font-bold text-blue-950 mb-4 border-b flex gap-2 pb-2">

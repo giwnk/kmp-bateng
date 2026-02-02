@@ -3,6 +3,7 @@ import TextInput from "../TextInput";
 import MultiSelect from "../MultiSelect";
 
 export default function IdentitySection({ data, setData, errors, jenisUsahaOpt }) {
+    console.log('ISI data child', data)
     return (
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 h-full">
             <h2 className="text-lg font-bold text-blue-950 mb-4 border-b flex gap-2 pb-2">
