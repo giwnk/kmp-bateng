@@ -25,6 +25,7 @@ export default function TextInput({
                 key={name}
                 id={name}
                 name={name}
+                value={value}
                 className={`border-2 border-gray-300 rounded-3xl w-full text-base text-blue-950 font-normal px-6 ${error ? "focus:border-red-800" : "focus:ring-blue-900 focus:border-blue-900"}`}
                 {...props}
             />

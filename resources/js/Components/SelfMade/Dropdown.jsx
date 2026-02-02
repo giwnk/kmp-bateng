@@ -50,11 +50,21 @@ export default function SelectInput({
                 </option>
 
                 {/* Looping Data */}
-                {options.map((item, index) => (
-                    <option key={index} value={item[optionValue]}>
-                        {item[optionLabel]}
-                    </option>
-                ))}
+                {options.map((option, index) =>
+                    // Cek apakah opsi berupa string biasa atau object
+                    typeof option === "object" ? (
+                        <option key={index} value={option.id}>
+                            {" "}
+                            {/* Kirim 'id' ke Backend */}
+                            {option.nama} {/* Tampilkan 'nama' ke User */}
+                        </option>
+                    ) : (
+                        // Fallback kalau opsinya cuma string biasa
+                        <option key={index} value={option}>
+                            {option}
+                        </option>
+                    ),
+                )}
             </select>
 
             {error && (
