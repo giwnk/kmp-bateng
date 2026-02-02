@@ -1,159 +1,140 @@
 import React from "react";
-import { Head } from "@inertiajs/react";
+import { Head, Link } from "@inertiajs/react";
 import StatCard from "@/Components/StatCard";
-import Navbar from "@/Components/Navbar"
-export default function Home({ dataPotensi, dataJenisUsaha, dataSdm }) {
+import Navbar from "@/Components/SelfMade/Navbar";
+import MapSebaran from "@/Components/MapSebaran";
+import Pagination from "@/Components/SelfMade/Pagination";
+import StatsCardLeft from "@/Components/SelfMade/Cards/StatsCardLeft";
+import StatsCardRight from "@/Components/SelfMade/Cards/StatsCardRight";
+import StatsCardCenter from "@/Components/SelfMade/Cards/StatsCardCenter";
+import Table from "@/Components/SelfMade/Table";
+import HeroSection from "@/Components/SelfMade/Section/HeroSection";
+import ContactSectionHome from "@/Components/SelfMade/Section/ContactFooter";
+export default function Home({
+    statsPotensi,
+    statsJenisUsaha,
+    statsSdm,
+    mapMarkers,
+    listKecamatan = [],
+}) {
+    const col = [
+        { label: "#", accessor: "no", className: "w-10 text-center" },
+        { label: "Kecamatan", accessor: "kecamatan" },
+        { label: "Desa", accessor: "desa", className: "text-center" },
+        { label: "Lurah", accessor: "kelurahan", className: "text-center" },
+        {
+            label: "Jml",
+            accessor: "jumlah",
+            className: "text-center font-bold",
+        },
+    ];
+    const columns = [
+        {
+            header: "Kecamatan",
+            render: (kec) => (
+                <div className="flex items-center gap-3 font-semibold hover:text-blue-900 hover:underline transition-all">
+                    <Link href={route("kecamatan.show", kec.id)}>
+                        {kec.kecamatan}
+                    </Link>
+                </div>
+            ),
+        },
+        {
+            header: "Koperasi Desa",
+            render: (kec) => (
+                <div className="flex items-center font-semibold gap-3">
+                    {kec.desa}
+                </div>
+            ),
+        },
+        {
+            header: "Koperasi Kelurahan",
+            render: (kec) => (
+                <div className="flex items-center font-semibold gap-3">
+                    {kec.kelurahan}
+                </div>
+            ),
+        },
+        {
+            header: "Total",
+            render: (kec) => (
+                <div className="flex items-center font-semibold gap-3">
+                    {kec.jumlah}
+                </div>
+            ),
+        },
+    ];
     return (
-
-
         <div className="min-h-screen bg-gray-50 p-6 font-sans">
             <Head title="Dashboard Statistik" />
 
-            {/* --- LAYOUT GRID 3 KOLOM --- */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* === KARTU 1: POTENSI (BIRU) === */}
-                <StatCard title="Potensi" headerColor="bg-blue-100">
-                    <p className="text-sm text-gray-500 mb-4">
-                        Potensi Koperasi Merah Putih Kabupaten Bangka Tengah
-                    </p>
-
-                    {/* Tabel Potensi */}
-                    <table className="w-full text-sm mb-6">
-                        <thead className="bg-gray-50 border-b">
-                            <tr>
-                                <th className="text-left py-2 px-2">Unit</th>
-                                <th className="text-right py-2 px-2">Jumlah</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr className="border-b">
-                                <td className="py-2 px-2">Desa</td>
-                                <td className="text-right px-2 font-bold">
-                                    {dataPotensi.desa}
-                                </td>
-                            </tr>
-                            <tr className="border-b">
-                                <td className="py-2 px-2">Kelurahan</td>
-                                <td className="text-right px-2 font-bold">
-                                    {dataPotensi.kelurahan}
-                                </td>
-                            </tr>
-                            <tr className="bg-gray-50 font-bold">
-                                <td className="py-2 px-2">Total</td>
-                                <td className="text-right px-2">
-                                    {dataPotensi.total}
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    {/* Grafik Batang History */}
-                    <p className="text-xs text-gray-500 mb-2 mt-6">
-                        Pembentukan Koperasi Merah Putih Pertahun
-                    </p>
-                    <div className="space-y-3">
-                        {dataPotensi.history.map((item, index) => (
-                            <div
-                                key={index}
-                                className="flex items-center text-xs"
-                            >
-                                <span className="w-20 font-bold">
-                                    Tahun {item.tahun}
-                                </span>
-                                <div className="flex-1 mx-2">
-                                    <div
-                                        className="h-4 bg-blue-800 rounded"
-                                        style={{ width: `${item.persen}%` }}
-                                    ></div>
-                                </div>
-                                <div className="text-right w-20">
-                                    <div className="font-bold">
-                                        {item.jumlah} Kop
-                                    </div>
-                                    <div className="text-gray-400">
-                                        ({item.persen}%)
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </StatCard>
-
-                {/* === KARTU 2: JENIS USAHA (HIJAU) === */}
-                <StatCard title="Jenis Usaha" headerColor="bg-green-100">
-                    <p className="text-sm text-gray-500 mb-4">
-                        Jenis Usaha Koperasi Merah Putih
-                    </p>
-
-                    <div className="space-y-4 text-xs">
-                        {dataJenisUsaha.map((item, index) => (
-                            <div key={index} className="flex flex-col">
-                                <div className="flex justify-between mb-1 uppercase font-semibold text-gray-700">
-                                    <span>{item.nama}</span>
-                                    <span className="text-gray-500">
-                                        {item.jumlah} KMP ({item.persen} %)
-                                    </span>
-                                </div>
-                                {/* Progress Bar */}
-                                <div className="w-full bg-gray-200 rounded-full h-2.5">
-                                    <div
-                                        className={`${item.color} h-2.5 rounded-full transition-all duration-500`}
-                                        style={{
-                                            width: `${item.persen * 2}%`,
-                                        }} // Dikali 10 biar kelihatan panjang dikit buat demo
-                                    ></div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </StatCard>
-
-                {/* === KARTU 3: SDM KOPERASI (KUNING) === */}
-                <StatCard
-                    title="SDM Koperasi"
-                    headerColor="bg-yellow-100 text-yellow-800"
+            <Navbar />
+            <main className="pt-15 px-6 lg:px-12 max-w-7xl scroll-smooth mx-auto">
+                {/* Section hero */}
+                <section id="hero" className="scroll-mt-32 mt-20 flex-col">
+                    <HeroSection></HeroSection>
+                </section>
+                {/* Section Statistik */}
+                <section
+                    id="statistik"
+                    className="scroll-mt-20 mt-10 flex flex-col gap-4 bg-white p-6 shadow-xl border border-gray-100 rounded-[3rem]"
                 >
-                    <table className="w-full text-sm">
-                        <thead className="bg-gray-50 border-b">
-                            <tr>
-                                <th className="text-left py-2 px-2 w-10">#</th>
-                                <th className="text-left py-2 px-2">
-                                    Kategori
-                                </th>
-                                <th className="text-right py-2 px-2">Jumlah</th>
-                                <th className="text-right py-2 px-2">(%)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {dataSdm.map((item, index) => (
-                                <tr
-                                    key={index}
-                                    className={`border-b ${
-                                        item.kategori === "TOTAL"
-                                            ? "font-bold bg-gray-50"
-                                            : ""
-                                    }`}
-                                >
-                                    <td className="py-3 px-2 text-gray-500">
-                                        {item.kategori !== "TOTAL"
-                                            ? index + 1
-                                            : ""}
-                                    </td>
-                                    <td className="py-3 px-2">
-                                        {item.kategori}
-                                    </td>
-                                    <td className="py-3 px-2 text-right">
-                                        {item.jumlah}
-                                    </td>
-                                    <td className="py-3 px-2 text-right">
-                                        {item.persen}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </StatCard>
-            </div>
+                    <div className="flex justify-center items-center flex-col">
+                        <h1 className="text-lg font-semibold text-blue-950">
+                            Statistik Unit Koperasi
+                        </h1>
+                        <h3 className="text-base font-medium text-blue-950">
+                            Kabupaten Bangka Tengah
+                        </h3>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+                        {/* === KARTU 1: POTENSI (BIRU) === */}
+                        <StatsCardLeft
+                            dataPotensi={statsPotensi}
+                            dataSdm={statsSdm}
+                        ></StatsCardLeft>
+
+                        {/* === KARTU 2: JENIS USAHA (HIJAU) === */}
+                        <StatsCardCenter
+                            dataJenisUsaha={statsJenisUsaha}
+                        ></StatsCardCenter>
+
+                        {/* === KARTU 3: SDM KOPERASI (KUNING) === */}
+                        <StatsCardRight
+                            dataTren={statsPotensi}
+                        ></StatsCardRight>
+                    </div>
+                </section>
+
+                {/* Section Sebaran */}
+                <section
+                    id="sebaran"
+                    className="scroll-mt-20 mt-10 flex flex-col gap-3 bg-white p-6 shadow-xl border border-gray-100 rounded-[3rem] "
+                >
+                    <div className="flex justify-center items-center flex-col">
+                        <h1 className="text-lg font-semibold text-blue-950">
+                            Peta Sebaran dan Tabel Wilayah
+                        </h1>
+                        <h3 className="text-base font-medium text-blue-950">
+                            Kabupaten Bangka Tengah
+                        </h3>
+                    </div>
+                    <MapSebaran data={mapMarkers} />
+                    <Table
+                        columns={columns}
+                        items={{ data: listKecamatan }}
+                    ></Table>
+                </section>
+
+                {/* Contact Section */}
+                <section
+                    id="kontak"
+                    className="scroll-mt-10"
+                >
+                    <ContactSectionHome></ContactSectionHome>
+                </section>
+            </main>
         </div>
     );
 }

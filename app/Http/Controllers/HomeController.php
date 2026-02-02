@@ -21,14 +21,14 @@ class HomeController extends Controller
         // ==========================================================
         // 1. CARD POTENSI (Unit, Wilayah, & Tren Pertahun)
         // ==========================================================
-        $totalKoperasi = Koperasi::where('status_operasional', true)->count();
+        $totalKoperasi = Koperasi::count();
 
         // Menghitung berapa Desa/Kelurahan yang memiliki koperasi
         // Asumsi: Kamu punya model Desa. Jika tidak, bisa pakai distinct('desa_id')
-        $koperasiDesa = Koperasi::where('status_operasional', true)->whereHas('desa', function($query) {
+        $koperasiDesa = Koperasi::whereHas('desa', function($query) {
                                 $query->where('jenis', 'Desa');
                             })->count();
-        $koperasiKelurahan = Koperasi::where('status_operasional', true)->whereHas('desa', function($query) {
+        $koperasiKelurahan = Koperasi::whereHas('desa', function($query) {
                     $query->where('jenis', 'Kelurahan');
                 })->count();
 
@@ -46,11 +46,20 @@ class HomeController extends Controller
             ->limit(5) // Ambil 5 tahun terakhir saja
             ->get();
 
+        $koperasiAktif = Koperasi::where('status_operasional', true)->count();
+        $koperasiNonAktif = Koperasi::where('status_operasional', false)->count();
+
         $statsPotensi = [
             'total_unit' => $totalKoperasi,
             'total_unit_desa' => $koperasiDesa,
             'total_unit_kelurahan' => $koperasiKelurahan,
-            'tren_pembentukan' => $pembentukanPerTahun
+            'status_koperasi' => [
+                'aktif' => $koperasiAktif,
+                'non_aktif' => $koperasiNonAktif,
+                'total' => $koperasiAktif + $koperasiNonAktif,],
+            'tren_pembentukan' => [
+                'labels' => $pembentukanPerTahun->pluck('tahun'),
+                'values' => $pembentukanPerTahun->pluck('jumlah'),]
         ];
 
         // ==========================================================
@@ -121,9 +130,35 @@ class HomeController extends Controller
             ->whereNotNull('latitude')->whereNotNull('longitude')
             ->get();
 
-        $listKecamatan = Kecamatan::withCount(['koperasis' => function($q){
-            $q->where('status_operasional', true);
-        }])->orderBy('nama')->get();
+        $listKecamatan = Kecamatan::withCount([
+            // Hitung koperasi yang berada di wilayah bertipe 'Desa'
+            'koperasis as unit_desa_count' => function ($query) {
+                $query->whereHas('desa', function ($q) {
+                    $q->where('jenis', 'Desa'); // Sesuaikan string 'Desa' dengan DB kamu
+                });
+            },
+            // Hitung koperasi yang berada di wilayah bertipe 'Kelurahan'
+            'koperasis as unit_kelurahan_count' => function ($query) {
+                $query->whereHas('desa', function ($q) {
+                    $q->where('jenis', 'Kelurahan'); // Sesuaikan string 'Kelurahan' dengan DB kamu
+                });
+            },
+            // Total keseluruhan per kecamatan
+            'koperasis as total_unit_count'
+        ])
+        ->orderBy('nama')
+        ->get()
+        ->map(function ($kec, $index) {
+            // Transformasi data agar sesuai dengan format tabel (items)
+            return [
+                'id' => $kec->id,
+                'no' => $index + 1,
+                'kecamatan' => $kec->nama,
+                'desa' => $kec->unit_desa_count ?? 0,
+                'kelurahan' => $kec->unit_kelurahan_count ?? 0,
+                'jumlah' => $kec->total_unit_count ?? 0,
+            ];
+        });
 
         return Inertia::render('Home', [
             'statsPotensi' => $statsPotensi,
@@ -151,13 +186,52 @@ class HomeController extends Controller
     /**
      * Halaman Detail Koperasi (Saat Koperasi di-klik)
      */
-    public function show(Koperasi $koperasi)
+    public function showKoperasi(Koperasi $koperasi)
     {
         // Load semua relasi yang dibutuhkan untuk halaman detail
-        $koperasi->load(['kecamatan', 'desa', 'jenisUsaha']);
+        $koperasi->load(['kecamatan', 'desa', 'jenisUsahas']);
+        $koperasi->loadCount([
+            'anggotaKoperasis', // Menghitung baris di tabel anggota_koperasis
 
-        return Inertia::render('Home/DetailKoperasi', [
+            // Menghitung pengurus (asumsi ada kolom 'kategori' di tabel sdm_koperasis)
+            'sdmKoperasis as pengurus_count' => function ($query) {
+                $query->where('kategori', 'Pengurus');
+            },
+
+            // Menghitung pengawas
+            'sdmKoperasis as pengawas_count' => function ($query) {
+                $query->where('kategori', 'Pengawas');
+            },
+        ]);
+
+        return Inertia::render('KoperasiShow', [
             'koperasi' => $koperasi
+        ]);
+    }
+
+    public function showKecamatan(Kecamatan $kecamatan)
+    {
+        // 1. Ambil data koperasi yang berelasi dengan kecamatan ini
+        // Kita gunakan paginate agar sesuai dengan komponen Table kamu
+        $koperasis = Koperasi::where('kecamatan_id', $kecamatan->id)
+            ->with(['desa', 'jenisUsahas']) // Eager loading relasi
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
+        // 2. Tambahkan statistik ringkas untuk header halaman
+        $stats = [
+            'total_unit' => Koperasi::where('kecamatan_id', $kecamatan->id)->count(),
+            'aktif' => Koperasi::where('kecamatan_id', $kecamatan->id)->where('status_operasional', true)->count(),
+            'total_anggota' => AnggotaKoperasi::whereHas('koperasi', function ($q) use ($kecamatan) {
+                $q->where('kecamatan_id', $kecamatan->id);
+            })->count(),
+        ];
+
+        return Inertia::render('KecamatanShow', [
+            'kecamatan' => $kecamatan,
+            'koperasis' => $koperasis,
+            'stats' => $stats
         ]);
     }
 }

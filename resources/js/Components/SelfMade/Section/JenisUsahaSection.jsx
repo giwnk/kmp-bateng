@@ -1,8 +1,11 @@
+import { Tags } from "lucide-react";
+
 export default function JenisUsahaSection({koperasi}){
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-blue-100 overflow-hidden">
-            <div className="px-6 py-4 border-b bg-blue-50">
-                <h3 className="font-bold text-blue-800">🏷️ Jenis Usaha</h3>
+        <div className="bg-white rounded-xl shadow-sm border border-blue-200 overflow-hidden">
+            <div className="px-6 py-4 border-b flex text-blue-900 gap-3 bg-blue-50">
+                <Tags></Tags>
+                <h3 className="font-bold text-blue-900">Jenis Usaha</h3>
             </div>
             <div className="p-6">
                 <div className="flex flex-wrap gap-2">
@@ -11,7 +14,7 @@ export default function JenisUsahaSection({koperasi}){
                         koperasi.jenis_usahas.map((ju) => (
                             <span
                                 key={ju.id}
-                                className="px-3 py-1.5 bg-white border border-blue-200 text-blue-700 text-sm font-medium rounded-lg shadow-sm"
+                                className="px-3 py-1.5 bg-white border border-blue-200 text-blue-900 text-sm font-medium rounded-lg shadow-sm"
                             >
                                 {ju.nama}
                             </span>

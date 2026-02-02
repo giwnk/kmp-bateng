@@ -36,6 +36,8 @@ class UpdateKoperasiRequest extends FormRequest
         // 1. Ambil ID Koperasi dari URL
         // Cek 'php artisan route:list', pastikan nama parameternya 'koperasi'
         // Contoh URL: /koperasi/{koperasi}/update
+        $koperasi = $this->route('koperasi');
+        $id = $koperasi->id;
 
         return [
             // --- 1. IDENTITAS UTAMA (Pake Ignore Rule) ---
@@ -46,14 +48,14 @@ class UpdateKoperasiRequest extends FormRequest
                 'string',
                 'max:255',
                 // Cek unik di tabel koperasis, kolom nomor_induk, KECUALI id yang sedang diedit
-                Rule::unique('koperasis', 'nomor_induk')->ignore($koperasiId),
+                Rule::unique('koperasis', 'nomor_induk')->ignore($id),
             ],
 
             'nomor_ahu' => [
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('koperasis', 'nomor_ahu')->ignore($koperasiId),
+                Rule::unique('koperasis', 'nomor_ahu')->ignore($id),
             ],
 
             'tanggal_ahu' => 'required|date',
@@ -63,7 +65,7 @@ class UpdateKoperasiRequest extends FormRequest
                 'required',
                 'email',
                 'max:255',
-                Rule::unique('koperasis', 'email')->ignore($koperasiId),
+                Rule::unique('koperasis', 'email')->ignore($id),
             ],
 
             'alamat' => 'required|string',

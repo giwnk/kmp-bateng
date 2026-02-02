@@ -14,12 +14,12 @@ class WilayahController extends Controller
     public function index()
     {
         // Ambil data Kecamatan beserta Desa-desanya
-        $listWilayah = Kecamatan::with('desas')->orderBy('nama', 'asc')->paginate(2);
+        $kecamatans = Kecamatan::with('desas')->orderBy('nama')->get();
         $kecamatanOpt = Kecamatan::select('id', 'nama')->orderBy('nama', 'asc')->get();
 
         return Inertia::render('Admin/Wilayah/Index', [
-            'wilayah' => $listWilayah,
-            'kecamatanOpt' => $kecamatanOpt
+            'kecamatans' => $kecamatans,
+            'kecamatanOpt' => $kecamatanOpt,
         ]);
     }
 
@@ -62,12 +62,14 @@ class WilayahController extends Controller
     {
         $request->validate([
             'kecamatan_id' => 'required|exists:kecamatans,id',
-            'nama' => 'required'
+            'nama' => 'required',
+            'jenis' => 'required|in:Desa,Kelurahan',
         ]);
 
         Desa::create([
             'kecamatan_id' => $request->kecamatan_id,
-            'nama' => $request->nama
+            'nama' => $request->nama,
+            'jenis' => $request->jenis,
         ]);
 
         return back()->with('success', 'Desa berhasil ditambah!');
@@ -75,10 +77,16 @@ class WilayahController extends Controller
 
     public function updateDesa(Request $request, $id)
     {
-        $request->validate(['nama' => 'required']);
+        $request->validate([
+            'nama' => 'required',
+            'jenis' => 'required|in:Desa,Kelurahan',
+        ]);
 
         $desa = Desa::findOrFail($id);
-        $desa->update(['nama' => $request->nama]);
+        $desa->update([
+            'nama' => $request->nama,
+            'jenis' => $request->jenis,
+        ]);
 
         return back()->with('success', 'Nama Desa diperbarui!');
     }

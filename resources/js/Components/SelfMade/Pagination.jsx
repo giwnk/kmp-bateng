@@ -2,7 +2,7 @@ import { Link } from "@inertiajs/react";
 export default function Pagination({ links }) {
     return (
         <div className="flex flex-wrap justify-center gap-1 mt-8">
-            {links.map((link, index) => {
+            {links?.map((link, index) => {
                 // Kalau URL-nya null (biasanya tombol Prev/Next yg mentok), jadiin span aja
                 if (link.url === null) {
                     return (

@@ -1,4 +1,4 @@
-import { Link } from "@inertiajs/react";
+import { Link, router } from "@inertiajs/react";
 // Import Icon dari Lucide
 import {
     LayoutDashboard,
@@ -13,9 +13,29 @@ import {
     FileChartColumn,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import Swal from "sweetalert2";
 
 export default function SidebarUsers({ className, auth, menuItems }) {
     const MotionLink = motion(Link);
+    const handleLogout = (e) => {
+        e.preventDefault();
+
+        Swal.fire({
+            title: "Keluar Sistem?",
+            text: "Anda harus login kembali untuk mengakses data.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#ef4444", // Warna merah
+            cancelButtonColor: "#6b7280",
+            confirmButtonText: "Ya, Logout!",
+            cancelButtonText: "Batal",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Mengirimkan request POST ke route logout
+                router.post(route("logout"));
+            }
+        });
+    };
     return (
         <aside
             className={`w-64 h-screen bg-gray-100 border-r-2 border-slate-400 border-solid flex flex-col flex-shrink-0 fixed left-0 top-0 overflow-y-auto ${className}`}
@@ -47,7 +67,7 @@ export default function SidebarUsers({ className, auth, menuItems }) {
 
             {/* 3. Footer Logout */}
             <div className="p-4 border-t border-gray-200">
-                <button className="flex w-full items-center gap-3 px-3 py-2 text-sm font-semibold text-red-700 border-2 border-red-700 hover:bg-red-700 hover:text-white rounded-lg transition-colors">
+                <button className="flex w-full items-center gap-3 px-3 py-2 text-sm font-semibold text-red-700 border-2 border-red-700 hover:bg-red-700 hover:text-white rounded-lg transition-colors" onClick={handleLogout}>
                     <LogOut size={18} />
                     <span>Keluar Aplikasi</span>
                 </button>

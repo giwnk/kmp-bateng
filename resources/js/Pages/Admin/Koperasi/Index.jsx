@@ -1,30 +1,53 @@
-import KoperasiCard from "@/Components/SelfMade/KoperasiCard";
+import KoperasiCard from "@/Components/SelfMade/Cards/KoperasiCard";
 import Pagination from "@/Components/SelfMade/Pagination";
 import AdminLayout from "@/Layouts/AdminLayout";
-import { Head, Link } from "@inertiajs/react";
+import { Head, Link, router } from "@inertiajs/react"; // 👈 Import router
+import Swal from "sweetalert2";
 import { Eye, MapPin, Pencil, Trash2 } from "lucide-react";
 
 export default function Index({ auth, koperasis, kecamatans, desas }) {
-    console.log("CEK DATA KOPERASI:", koperasis.data);
-    return (
-        <AdminLayout
-            user={auth.user}
-            header={
-                <h2 className="font-semibold text-xl text-gray-800">
-                    Manajemen Koperasi Merah Putih
-                </h2>
+    const handleDelete = (id, nama) => {
+        Swal.fire({
+            title: `Hapus ${nama}?`,
+            text: "Data yang dihapus tidak bisa dikembalikan!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Ya, Hapus!",
+            cancelButtonText: "Batal",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // 👇 Panggil Route Destroy
+                router.delete(route("admin.koperasi.destroy", id), {
+                    onSuccess: () => {
+                        Swal.fire(
+                            "Terhapus!",
+                            "Data koperasi berhasil dihapus.",
+                            "success",
+                        );
+                    },
+                });
             }
-        >
+        });
+    };
+    return (
+        <AdminLayout user={auth.user}>
             <Head title="Koperasi Merah Putih" />
             <div>
-                <div className="mb-4 flex items-center justify-between">
-                    <h1 className="font-bold text-xl text-blue-950">
-                        Koperasi
-                    </h1>
+                <div className="mb-6 flex items-center justify-between">
+                    <div className="">
+                        <h1 className="text-2xl font-bold text-gray-800">
+                            Manajemen Koperasi Merah Putih
+                        </h1>
+                        <p className="text-sm text-gray-500">
+                            Kelola seluruh data dari setiap koperasi
+                        </p>
+                    </div>
                     <div className=" flex ">
                         <Link
                             href={route("admin.koperasi.create")}
-                            className="bg-blue-900 text-white px-4 py-2 rounded-lg hover:bg-blue-950 transition"
+                            className="bg-blue-950 font-semibold text-white px-4 py-2 h-[45px] flex justify-center items-center rounded-xl hover:bg-blue-900 transition"
                         >
                             + Tambah Koperasi
                         </Link>
@@ -164,12 +187,18 @@ export default function Index({ auth, koperasis, kecamatans, desas }) {
                                                         <Pencil size={18} />
                                                     </Link>
 
-                                                    <button
+                                                    <Link
+                                                        onClick={() =>
+                                                            handleDelete(
+                                                                item.id,
+                                                                item.nama,
+                                                            )
+                                                        }
                                                         className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
                                                         title="Hapus"
                                                     >
                                                         <Trash2 size={18} />
-                                                    </button>
+                                                    </Link>
                                                 </div>
                                             </td>
                                         </tr>

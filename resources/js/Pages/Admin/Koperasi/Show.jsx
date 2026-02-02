@@ -13,7 +13,14 @@ import {
     Banknote,
     ShieldCheck,
     Briefcase,
+    CheckCircleIcon,
 } from "lucide-react";
+import JenisUsahaSection from "@/Components/SelfMade/Section/JenisUsahaSection";
+import KoperasiCard from "@/Components/SelfMade/Cards/KoperasiCard";
+import KetuaCard from "@/Components/SelfMade/Cards/KetuaCard";
+import SekretarisCard from "@/Components/SelfMade/Cards/Sekretaris";
+import BendaharaCard from "@/Components/SelfMade/Cards/BendaharaCard";
+import StatusKepatuhanSection from "@/Components/SelfMade/Section/StatusKepatuhanSection";
 
 export default function Show({ auth, koperasi }) {
     // Helper komponen kecil untuk baris data biar kodingan gak berantakan
@@ -227,125 +234,27 @@ export default function Show({ auth, koperasi }) {
                 {/* KOLOM KANAN (1/3): Sidebar Info */}
                 <div className="space-y-6">
                     {/* PIVOT JENIS USAHA */}
-                    <div className="bg-white rounded-xl shadow-sm border border-blue-100 overflow-hidden">
-                        <div className="px-6 py-4 border-b bg-blue-50">
-                            <h3 className="font-bold text-blue-800">
-                                🏷️ Jenis Usaha
-                            </h3>
-                        </div>
-                        <div className="p-6">
-                            <div className="flex flex-wrap gap-2">
-                                {koperasi.jenis_usahas &&
-                                koperasi.jenis_usahas.length > 0 ? (
-                                    koperasi.jenis_usahas.map((ju) => (
-                                        <span
-                                            key={ju.id}
-                                            className="px-3 py-1.5 bg-white border border-blue-200 text-blue-700 text-sm font-medium rounded-lg shadow-sm"
-                                        >
-                                            {ju.nama}
-                                        </span>
-                                    ))
-                                ) : (
-                                    <p className="text-gray-400 italic text-sm">
-                                        Belum ada jenis usaha.
-                                    </p>
-                                )}
-                            </div>
-                            <p className="mt-4 text-xs text-gray-500 leading-relaxed">
-                                Koperasi ini menjalankan unit usaha sesuai
-                                dengan KBLI yang terdaftar pada sistem OSS.
-                            </p>
-                        </div>
-                    </div>
+                    <JenisUsahaSection koperasi={koperasi}></JenisUsahaSection>
 
                     {/* STATUS KEPATUHAN (Badge Besar) */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                        <h3 className="font-bold text-gray-700 mb-4">
-                            Status Kepatuhan
-                        </h3>
-                        <div className="space-y-3">
-                            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                                <span className="text-sm text-gray-600">
-                                    Sertifikat NIK
-                                </span>
-                                {koperasi.status_sertifikat ? (
-                                    <BadgeCheck className="text-emerald-500" />
-                                ) : (
-                                    <span className="text-xs text-red-500 font-bold">
-                                        BELUM
-                                    </span>
-                                )}
-                            </div>
-                            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                                <span className="text-sm text-gray-600">
-                                    Pelatihan Pengurus
-                                </span>
-                                {koperasi.status_pelatihan ? (
-                                    <BadgeCheck className="text-emerald-500" />
-                                ) : (
-                                    <span className="text-xs text-red-500 font-bold">
-                                        BELUM
-                                    </span>
-                                )}
-                            </div>
-                        </div>
-                    </div>
+                    <StatusKepatuhanSection koperasi={koperasi}></StatusKepatuhanSection>
                 </div>
             </div>
 
             {/* --- SECTION 3: SDM / PENGURUS --- */}
             <div className="mb-8">
-                <h3 className="text-lg font-bold text-gray-800 mb-4">
-                    👥 Pengurus Koperasi
+                <h3 className="text-lg font-bold text-gray-800 mb-4 flex gap-3">
+                    <Users></Users> Pengurus Koperasi
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {/* Card Ketua */}
-                    <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm text-center hover:shadow-md transition">
-                        <div className="w-16 h-16 bg-gray-200 rounded-full mx-auto mb-3 overflow-hidden">
-                            <img
-                                src="https://ui-avatars.com/api/?name=Ketua+Kop"
-                                alt="Ketua"
-                            />
-                        </div>
-                        <h4 className="font-bold text-gray-800">
-                            {koperasi.ketua?.name || "Belum Diisi"}
-                        </h4>
-                        <p className="text-sm text-blue-600 font-medium">
-                            Ketua
-                        </p>
-                    </div>
+                    <KetuaCard koperasi={koperasi}></KetuaCard>
 
                     {/* Card Sekretaris */}
-                    <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm text-center hover:shadow-md transition">
-                        <div className="w-16 h-16 bg-gray-200 rounded-full mx-auto mb-3 overflow-hidden">
-                            <img
-                                src="https://ui-avatars.com/api/?name=Sekretaris+Kop"
-                                alt="Sekretaris"
-                            />
-                        </div>
-                        <h4 className="font-bold text-gray-800">
-                            {koperasi.sekretaris?.name || "Belum Diisi"}
-                        </h4>
-                        <p className="text-sm text-blue-600 font-medium">
-                            Sekretaris
-                        </p>
-                    </div>
+                    <SekretarisCard koperasi={koperasi}></SekretarisCard>
 
                     {/* Card Bendahara */}
-                    <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm text-center hover:shadow-md transition">
-                        <div className="w-16 h-16 bg-gray-200 rounded-full mx-auto mb-3 overflow-hidden">
-                            <img
-                                src="https://ui-avatars.com/api/?name=Bendahara+Kop"
-                                alt="Bendahara"
-                            />
-                        </div>
-                        <h4 className="font-bold text-gray-800">
-                            {koperasi.bendahara?.name || "Belum Diisi"}
-                        </h4>
-                        <p className="text-sm text-blue-600 font-medium">
-                            Bendahara
-                        </p>
-                    </div>
+                    <BendaharaCard koperasi={koperasi}></BendaharaCard>
                 </div>
             </div>
 

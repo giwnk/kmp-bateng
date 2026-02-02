@@ -33,13 +33,13 @@ export default function AdminLayout({ user, header, children }) {
         },
         {
             label: "Manajemen User",
-            route: "#",
-            active: "admin.user.*",
+            route: route("admin.users.index"),
+            active: "admin.users.*",
             icon: <Users size={20} />,
         },
         {
             label: "Validasi Laporan",
-            route: "#",
+            route: route("admin.laporan.index"),
             active: "admin.laporan.*",
             icon: <FileCheck size={20} />,
         },

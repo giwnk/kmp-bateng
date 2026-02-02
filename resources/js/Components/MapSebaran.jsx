@@ -7,10 +7,10 @@ import L from "leaflet";
 import icon from "leaflet/dist/images/marker-icon.png";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
 
-let DefaultIcon = L.icon({
-    iconUrl: icon,
+let DefaultIcon = new L.icon({
+    iconUrl: "/images/home-marker-icon.svg",
     shadowUrl: iconShadow,
-    iconSize: [25, 41],
+    iconSize: [38, 38],
     iconAnchor: [12, 41],
 });
 
@@ -22,7 +22,7 @@ export default function MapSebaran({ data }) {
     const centerPosition = [-2.5, 106.3];
 
     return (
-        <div className="rounded-xl overflow-hidden shadow-lg border border-gray-200 z-0">
+        <div className="rounded-[2.5rem] overflow-hidden shadow-lg border-2 border-slate-400 z-0">
             <MapContainer
                 center={centerPosition}
                 zoom={9}
@@ -41,7 +41,7 @@ export default function MapSebaran({ data }) {
                         key={index}
                         position={[item.latitude, item.longitude]}
                     >
-                        <Popup>
+                        <Popup >
                             <div className="text-center">
                                 <h3 className="font-bold text-sm text-blue-900">
                                     {item.nama}
