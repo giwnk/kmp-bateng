@@ -73,8 +73,9 @@ class StoreKoperasiRequest extends FormRequest
         return [
             'kecamatan_id.exists' => 'Kecamatan yang dipilih tidak valid.',
             'desa_id.exists' => 'Desa yang dipilih tidak valid.',
-            'jenis_usaha_ids.required' => 'Wajib memilih minimal satu jenis usaha.',
-            'jenis_usaha_ids.*.exists' => 'Salah satu jenis usaha yang dipilih tidak valid.',
+            'nama.required' => 'Nama tidak boleh kosong',
+            'jenis_usaha_ids.required' => 'Pilih minimal satu jenis usaha, Bestie!',
+            'jenis_usaha_ids.min' => 'Wajib pilih minimal satu jenis usaha.',
             'nomor_induk.unique' => 'Nomor Induk Koperasi (NIK) ini sudah terdaftar.',
             'nomor_ahu.unique' => 'Nomor AHU ini sudah terdaftar.',
             'email.unique' => 'Email ini sudah digunakan oleh koperasi lain.',
