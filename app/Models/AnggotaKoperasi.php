@@ -22,6 +22,24 @@ class AnggotaKoperasi extends Model
         return $this->belongsTo(Koperasi::class);
     }
 
+    public function getSaldoAttribute()
+    {
+        // Hitung masing-masing kategori
+        $pokok = $this->transaksis()->where('jenis_transaksi', 'Simpanan Pokok')->sum('jumlah');
+        $wajib = $this->transaksis()->where('jenis_transaksi', 'Simpanan Wajib')->sum('jumlah');
+        $sukarela = $this->transaksis()->where('jenis_transaksi', 'Simpanan Sukarela')->sum('jumlah');
+
+        // Penarikan biasanya ngurangin yang Sukarela doang
+        $penarikan = $this->transaksis()->where('jenis_transaksi', 'penarikan')->sum('jumlah');
+
+        return [
+            'pokok' => $pokok,
+            'wajib' => $wajib,
+            'sukarela' => $sukarela - $penarikan,
+            'total' => ($pokok + $wajib + $sukarela) - $penarikan
+        ];
+    }
+
     // ✅ Tambahan: Relasi ke Transaksi (One to Many)
     // "Satu Anggota punya Banyak Transaksi"
     public function transaksis() {

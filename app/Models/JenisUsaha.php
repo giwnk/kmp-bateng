@@ -11,7 +11,7 @@ class JenisUsaha extends Model
     protected $guarded = ['id'];
     protected $casts = ['status_aktif' => 'string'];
 
-    public function koperasi() {
+    public function koperasis() {
         return $this->belongsToMany(Koperasi::class, 'pilihan_jenis_usaha');
     }
 }

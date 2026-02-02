@@ -15,7 +15,7 @@ class Koperasi extends Model
     // Biar data angka & boolean otomatis rapi
     protected $casts = [
         'tanggal_ahu' => 'date',
-        'tahun_pembentukan' => 'date',
+        'tahun_pembentukan' => 'integer',
         'tanggal_berdiri' => 'date',
         'latitude' => 'double',
         'longitude' => 'double',
@@ -34,7 +34,7 @@ class Koperasi extends Model
     }
 
     public function jenisUsahas() {
-        return $this->hasMany(JenisUsaha::class);
+        return $this->belongsToMany(JenisUsaha::class, 'pilihan_jenis_usaha');
     }
 
     public function sdmKoperasis() {
