@@ -20,25 +20,31 @@ export default function AdminLayout({ user, header, children }) {
             icon: <LayoutDashboard size={20} />,
         },
         {
-            label: "Manajemen Wilayah",
+            label: "Identitas Koperasi",
             route: route("admin.wilayah.index"),
             active: "admin.wilayah.*",
             icon: <Map size={20} />,
         },
         {
-            label: "Manajemen Koperasi",
+            label: "Manajemen Anggota",
             route: route("admin.koperasi.index"), // Ganti route('admin.koperasi.index') nanti
             active: "admin.koperasi.*",
             icon: <Handshake size={20} />,
         },
         {
-            label: "Manajemen User",
+            label: "Manajemen Transaksi",
             route: route("admin.users.index"),
             active: "admin.users.*",
             icon: <Users size={20} />,
         },
         {
-            label: "Validasi Laporan",
+            label: "Laporan Bulanan",
+            route: route("admin.laporan.index"),
+            active: "admin.laporan.*",
+            icon: <FileCheck size={20} />,
+        },
+        {
+            label: "Pengaturan Akun",
             route: route("admin.laporan.index"),
             active: "admin.laporan.*",
             icon: <FileCheck size={20} />,
