@@ -25,7 +25,7 @@ class LaporanBulananController extends Controller
             ->withQueryString();
 
         // 3. Tambahan: Ambil daftar kecamatan unik dari tabel Koperasi buat dropdown di FE
-        $listKecamatan = Kecamatan::orderBy('nama')->get;
+        $listKecamatan = Kecamatan::orderBy('nama')->get();
 
         return Inertia::render('Admin/LaporanBulanan/Index', [
             'laporanBulanan' => $laporanBulanan,
