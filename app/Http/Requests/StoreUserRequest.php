@@ -20,7 +20,7 @@ class StoreUserRequest extends FormRequest
 
             // 2. Password (Wajib Konfirmasi)
             // Pastikan di form ada input name="password_confirmation"
-            'password' => 'required|string|min:8|confirmed',
+            // 'password' => 'required|string|min:8|confirmed',
 
             // 3. Role (Sesuai Enum di Database)
             'role' => 'required|in:admin_dinas,user_koperasi',
