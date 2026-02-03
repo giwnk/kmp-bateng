@@ -38,7 +38,7 @@ class AuthenticatedSessionController extends Controller
         }
 
         if ($user->role === 'user_koperasi') {
-            return redirect()->route('koperasi.dashboard');
+            return redirect()->route('users.dashboard');
         }
 
             // Default kalau role gak jelas
