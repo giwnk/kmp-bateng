@@ -75,8 +75,6 @@ class LaporanBulananController extends Controller
                 'message' => 'Laporan yang sudah terkirim atau disetujui tidak dapat dihapus!'
             ]);
         }
-
-
         $validatedData = $request->validated();
         $bulan = $validatedData['bulan'];
         $tahun = $validatedData['tahun'];

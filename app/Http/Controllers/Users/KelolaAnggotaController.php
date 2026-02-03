@@ -1,7 +1,7 @@
 <?php
 
-namespace App\Http\Controllers;
-
+namespace App\Http\Controllers\Users;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreAnggotaRequest;
 use App\Http\Requests\UpdateAnggotaRequest;
@@ -14,11 +14,11 @@ class KelolaAnggotaController extends Controller
 {
     public function index(){
         $koperasi = Auth::user()->koperasi;
-        $anggotaKoperasis = $koperasi->anggotaKoperasis->latest()->paginate(10);
+        $anggotaKoperasis = $koperasi->anggotaKoperasis()->latest()->paginate(10);
 
         return Inertia::render('Koperasi/Anggota/Index', [
             'koperasi' => $koperasi,
-            'anggotaKoperasi' => $anggotaKoperasi,
+            'anggotaKoperasi' => $anggotaKoperasis,
             'statusOpt' => ['Aktif', 'Non Aktif']
         ]);
     }
