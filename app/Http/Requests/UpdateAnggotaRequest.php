@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateAnggotaRequest extends FormRequest
 {
@@ -21,15 +22,15 @@ class UpdateAnggotaRequest extends FormRequest
      */
     public function rules(): array
     {
-        $anggotaId = $this->route('anggota_koperasi');
+        $anggotaId = $this->route('anggota');
         return [
             'nomor_anggota' => 'required|string|max:225',
             'nama' => 'required|string|max:225',
-            'nik' => ['required', 'numeric', 'digits:16', Rule::unique('anggota_koperasis', 'nik')->ignore($anggotaId) ],
+            'nik' => ['required', 'numeric', 'digits:16', \Illuminate\Validation\Rule::unique('anggota_koperasis', 'nik')->ignore($anggotaId)],
             'tanggal_bergabung' => 'required|date',
             'status' => ['required', Rule::in('Aktif', 'Non Aktif')],
             'alamat' => 'required|string',
-            'no_telepon' => 'nullable|string',
+            'nomor_telepon' => 'nullable|string',
         ];
     }
 
@@ -38,8 +39,8 @@ class UpdateAnggotaRequest extends FormRequest
         $errorMsgImg = 'Foto harus menggunakan format PNG, JPEG, dan JPG dengan maksimal ukuran 2MB.';
         return [
             'required' => 'Form harus diisi dan tidak boleh kosong, coba lagi!',
-            'nik.digit' => $errorMsgNik,
-            'nik.unique' => $errorMsgNik,
+            'nik.digits' => 'NIK harus tepat 16 digit angka!', // 👈 Pakai 'digits' (dengan S)
+            'nik.unique' => 'NIK ini sudah terdaftar di anggota lain!',
             'mimes' => $errorMsgImg,
             'max' => $errorMsgImg,
         ];

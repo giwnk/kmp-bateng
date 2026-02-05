@@ -25,7 +25,7 @@ class StoreTransaksiRequest extends FormRequest
             // Pastikan nama tabel di database benar 'anggota_koperasis' atau 'anggotas'? Sesuaikan ya!
             'anggota_koperasi_id' => [
                 'required',
-                'integer',
+                'string',
                 'exists:anggota_koperasis,id' // Cek ID ini ada di tabel anggota
             ],
 
