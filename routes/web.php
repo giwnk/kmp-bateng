@@ -9,6 +9,12 @@ use App\Http\Controllers\Admin\WilayahController;
 use App\Http\Controllers\Admin\ManajemenKoperasiController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\LaporanBulananController;
+use App\Http\Controllers\Users\LaporanBulananController as LaporanUsers;
+use App\Http\Controllers\Users\ProfilKoperasiController;
+use App\Http\Controllers\Users\KelolaAnggotaController;
+use App\Http\Controllers\Users\KelolaSdmController;
+use App\Http\Controllers\Users\TransaksiController;
+use App\Http\Controllers\Users\KelolaGaleriController;
 use App\Http\Controllers\HomeController;
 use App\Models\Koperasi;
 use App\Models\JenisUsaha;
@@ -30,7 +36,7 @@ Route::get('/', function () {
 Route::get('/dashboard', function () {
     $user = Auth::user();
     if ($user->role === 'admin_dinas') return redirect()->route('admin.dashboard');
-    if ($user->role === 'user_koperasi') return redirect()->route('koperasi.dashboard');
+    if ($user->role === 'user_koperasi') return redirect()->route('users.dashboard');
     return redirect('/');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -39,7 +45,6 @@ Route::middleware(['auth', 'role:admin_dinas'])
     ->name('admin.')        // Nama tetap admin....
     ->group(function () {
 
-        // Panggil Controller yang ada di folder utama tadi
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
         Route::get('/wilayah', [WilayahController::class, 'index'])->name('wilayah.index');
@@ -74,12 +79,17 @@ Route::middleware(['auth', 'role:admin_dinas'])
 
 });
 
-Route::middleware(['auth', 'verified'])->prefix('koperasi')->name('koperasi.')->group(function () {
+Route::middleware(['auth', 'role:user_koperasi'])->prefix('users')->name('users.')->group(function () {
 
-    // 👇 INI DIA ROUTE YANG DICARI-CARI LARAVEL
-    Route::get('/dashboard', function () {
-        return Inertia::render('Koperasi/Dashboard/Index'); // Pastikan file Page-nya ada
-    })->name('dashboard'); // Hasilnya jadi 'koperasi.dashboard'
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard'); // Hasilnya jadi 'koperasi.dashboard'
+    Route::resource('koperasi', ProfilKoperasiController::class)->only(['show', 'update', 'edit']);
+    Route::resource('anggota', KelolaAnggotaController::class)->only(['index', 'show', 'update', 'store', 'destroy'])->parameters(['anggota' => 'anggota']);
+    Route::resource('galeri', KelolaGaleriController::class)->only(['index', 'show', 'store', 'destroy']);
+    Route::resource('sdm', KelolaSdmController::class)->only(['index', 'show', 'edit', 'create', 'update', 'store', 'destroy']);
+    Route::resource('laporan', LaporanUsers::class)->only(['index', 'update', 'store', 'destroy']);
+    Route::resource('transaksi', TransaksiController::class)->only(['index', 'store', 'destroy']);
+    Route::get('/get-desa/{kecamatan_id}', [WilayahController::class, 'getDesaByKecamatan'])
+        ->name('api.getDesa');
 
 });
 
@@ -92,18 +102,6 @@ Route::get('/playground', function () {
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::get('home/kecamatan/{kecamatan}', [HomeController::class, 'showKecamatan'])->name('kecamatan.show');
 Route::get('home/koperasi/{koperasi}', [HomeController::class, 'showKoperasi'])->name('koperasi.show');
-
-Route::get('/sebaran', function () {
-    // Ambil Koperasi yang punya koordinat aja biar map gak error
-    $lokasiKoperasi = Koperasi::select('id', 'nama', 'latitude', 'longitude', 'alamat', 'status_operasional')
-        ->whereNotNull('latitude')
-        ->whereNotNull('longitude')
-        ->get();
-
-    return Inertia::render('Sebaran', [
-        'locations' => $lokasiKoperasi
-    ]);
-})->name('sebaran');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
