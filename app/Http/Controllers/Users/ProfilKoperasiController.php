@@ -24,8 +24,17 @@ class ProfilKoperasiController extends Controller
                 },
                 'sdmKoperasis as jumlah_pengawas' => function ($query) {
                     $query->where('kategori', 'Pengawas Koperasi');
+                },
+                'anggotaKoperasis as jumlah_anggota'
+             ])
+             ->loadSum([
+                'transaksis as total_simpanan_pokok' => function ($query) {
+                    $query->where('jenis_transaksi', 'Simpanan Pokok');
+                },
+                'transaksis as total_simpanan_wajib' => function ($query) {
+                    $query->where('jenis_transaksi', 'Simpanan Wajib');
                 }
-             ]);
+            ], 'jumlah');
         $kecamatans = Kecamatan::all();
         $desas = Desa::where('kecamatan_id', $koperasi->kecamatan_id)->get();
 

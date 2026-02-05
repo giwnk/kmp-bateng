@@ -28,6 +28,7 @@ class TransaksiController extends Controller
         return Inertia::render('Koperasi/Transaksi/Index', [
             'transaksi' => $transaksi,
             'anggotaOpt' => $koperasi->anggotaKoperasis()->get(['id', 'nama', 'nik']),
+            'jenisTransaksiOpt' => ['Simpanan Pokok', 'Simpanan Wajib', 'Simpanan Sukarela', 'Penarikan'],
             'filters' => $filters
         ]);
     }
@@ -40,7 +41,7 @@ class TransaksiController extends Controller
         return DB::transaction(function () use ($validated, $koperasi) {
             $anggota = AnggotaKoperasi::findOrFail($validated['anggota_koperasi_id']);
 
-            if ($validated['jenis_transaksi'] === 'penarikan') {
+            if ($validated['jenis_transaksi'] === 'Penarikan') {
                 // Kita cuma izinkan narik dari saldo Sukarela
                 $saldoSukarela = $anggota->transaksis()->where('kategori', 'Simpanan Sukarela')->sum('jumlah')
                             - $anggota->transaksis()->where('jenis_transaksi', 'penarikan')->sum('jumlah');
@@ -54,7 +55,7 @@ class TransaksiController extends Controller
 
             $koperasi->transaksis()->create($validated);
 
-            return back()->with('success', 'Transaksi ' . $validated['kategori'] . ' berhasil! 🚀');
+            return back()->with('success', 'Transaksi ' . $validated['jenis_transaksi'] . ' berhasil! 🚀');
         });
     }
 

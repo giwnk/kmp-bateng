@@ -23,13 +23,13 @@ class KelolaAnggotaController extends Controller
         ]);
     }
 
-    public function show(AnggotaKoperasi $anggotaData){
-        if ($anggotaData->koperasi_id !== Auth::user()->koperasi->id) {
+    public function show(AnggotaKoperasi $anggota){
+        if ($anggota->koperasi_id !== Auth::user()->koperasi->id) {
             abort(403);
         }
 
         return Inertia::render('Koperasi/Anggota/Show', [
-            'anggotaData' => $anggotaData
+            'anggotaData' => $anggota
         ]);
     }
 
@@ -41,22 +41,22 @@ class KelolaAnggotaController extends Controller
         return back()->with('success', 'Anggota berhasil ditambah');
     }
 
-    public function update(UpdateAnggotaRequest $request, AnggotaKoperasi $anggotaData){
-        if ($anggotaData->koperasi_id !== Auth::user()->koperasi->id) {
+    public function update(UpdateAnggotaRequest $request, AnggotaKoperasi $anggota){
+        if ($anggota->koperasi_id !== Auth::user()->koperasi->id) {
             abort(403);
         }
 
         $validatedData = $request->validated();
-        $anggotaData->update($validatedData);
+        $anggota->update($validatedData);
 
         return back()->with('success', 'Anggota berhasil diperbarui');
     }
 
-    public function destroy(AnggotaKoperasi $anggotaData){
-        if ($anggotaData->koperasi_id !== Auth::user()->koperasi->id) {
+    public function destroy(AnggotaKoperasi $anggota){
+        if ($anggota->koperasi_id !== Auth::user()->koperasi->id) {
             abort(403);
         }
-        $anggotaData->delete();
+        $anggota->delete();
         return back()->with('success', 'Data SDM berhasil dihapus!');
     }
 }
