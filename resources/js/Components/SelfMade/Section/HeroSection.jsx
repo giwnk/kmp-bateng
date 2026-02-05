@@ -9,17 +9,17 @@ export default function HeroSection() {
         {
             url: "/images/hero-1.jpg", // Ganti dengan path foto kamu
             title: "Pengembangan Ekonomi Rakyat",
-            desc: "Mewadahi potensi ekonomi lokal melalui prinsip gotong royong dan kekeluargaan di Kabupaten Bangka Tengah.",
+            desc: "Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit. Sed Do Eiusmod Tempor Incididunt Ut Labore Et Dolore Magna Aliqua.",
         },
         {
             url: "/images/hero-2.jpg",
             title: "Digitalisasi Koperasi Modern",
-            desc: "Transformasi sistem informasi koperasi untuk pelayanan yang lebih transparan, cepat, dan akuntabel.",
+            desc: "lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit. Sed Do Eiusmod Tempor Incididunt Ut Labore Et Dolore Magna Aliqua.",
         },
         {
             url: "/images/hero-3.jpg",
             title: "Sinergi Membangun Daerah",
-            desc: "Bersama pemerintah daerah mewujudkan kesejahteraan masyarakat melalui penguatan kelembagaan koperasi.",
+            desc: "Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit. Sed Do Eiusmod Tempor Incididunt Ut Labore Et Dolore Magna Aliqua.",
         },
     ];
 
@@ -43,7 +43,7 @@ export default function HeroSection() {
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                             <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-900"></span>
                         </span>
-                        Sistem Informasi Koperasi
+                        Sistem Dashboard Koperasi Merah Putih
                     </div>
 
                     <h1 className="text-4xl md:text-5xl font-black text-gray-900 leading-[1.1] tracking-tighter">
@@ -56,16 +56,14 @@ export default function HeroSection() {
                     </p>
 
                     <div className="flex flex-wrap gap-4 pt-4">
-                        <button className="bg-gray-900 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-900 transition-all shadow-lg flex items-center gap-2 group">
-                            Pelajari Selengkapnya
+                        <a href="#statistik" className="bg-gray-900 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-900 transition-all shadow-lg flex items-center gap-2 group">
+                            Lihat Statistik
                             <ArrowRight
                                 size={16}
                                 className="group-hover:translate-x-1 transition-transform"
                             />
-                        </button>
-                        <button className="bg-white text-gray-900 border-2 border-gray-100 px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-gray-50 transition-all">
-                            Lihat Statistik
-                        </button>
+                        </a>
+
                     </div>
                 </div>
 

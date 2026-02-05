@@ -22,14 +22,14 @@ export default function ContactFooter() {
                     <div className="space-y-4">
                         <div className="flex items-center gap-2">
                             <div className="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center font-black text-xs">
-                                BT
+                                KMP
                             </div>
-                            <span className="font-black text-xl tracking-tighter uppercase">
-                                Siko<span className="text-red-500">-Baten</span>
+                            <span className="font-bold text-xl tracking-tighter uppercase">
+                                KMP<span className="text-red-500"> Bangka Tengah</span>
                             </span>
                         </div>
                         <p className="text-gray-400 text-xs leading-relaxed font-medium pr-4">
-                            Sistem Informasi Kelembagaan Koperasi Kabupaten
+                            Sistem Dashboard Koperasi Merah Putih Kabupaten
                             Bangka Tengah. Mewujudkan data koperasi yang akurat
                             dan transparan.
                         </p>
@@ -84,7 +84,7 @@ export default function ContactFooter() {
                                 <Mail size={16} className="text-red-500" />
                             </div>
                             <span className="text-xs text-gray-300 font-medium">
-                                diskopukm@bangkatengahkab.go.id
+                                email@bangkatengahkab.go.id
                             </span>
                         </div>
                     </div>
@@ -113,7 +113,7 @@ export default function ContactFooter() {
                 {/* --- BOTTOM BAR --- */}
                 <div className="mt-12 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
                     <p className="text-[10px] font-bold text-gray-600 uppercase tracking-widest">
-                        © 2024 Dinas Koperasi & UKM Bangka Tengah
+                        © 2024 Dinas Komunikasi, Informatika dan Statistika Kabupaten Bangka Tengah
                     </p>
                     <div className="flex gap-6">
                         <a
