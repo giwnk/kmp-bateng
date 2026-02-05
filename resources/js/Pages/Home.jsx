@@ -71,7 +71,7 @@ export default function Home({
             <Navbar />
             <main className="pt-15 px-6 lg:px-12 max-w-7xl scroll-smooth mx-auto">
                 {/* Section hero */}
-                <section id="hero" className="scroll-mt-32 mt-20 flex-col">
+                <section id="#" className="scroll-mt-32 mt-20 flex-col">
                     <HeroSection></HeroSection>
                 </section>
                 {/* Section Statistik */}
