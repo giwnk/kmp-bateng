@@ -399,6 +399,13 @@ export default function Index({
                                     value={selectedLaporan.catatan}
                                     icon={<StickyNote />}
                                 />
+                                {selectedLaporan.status === "Rejected" && (
+                                    <InfoItem
+                                        label="Catatan Admin"
+                                        value={selectedLaporan.catatan_admin}
+                                        icon={<StickyNote />}
+                                    />
+                                )}
                             </div>
                         </div>
                     )}

@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import AdminLayout from "@/Layouts/AdminLayout"; // Sesuaikan dengan nama layout admin kamu
 import { Head, router, usePage } from "@inertiajs/react";
 import Table from "@/Components/SelfMade/Table";
+import Modal from "@/Components/SelfMade/ModalDialog";
+import SecondaryButton from "@/Components/SecondaryButton";
+import DangerButton from "@/Components/DangerButton";
 import {
     CheckCircle,
     XCircle,
@@ -20,6 +23,11 @@ export default function Index({
     filters,
     listKecamatan,
 }) {
+    // State Reject Modal
+    const [showRejectModal, setShowRejectModal] = useState(false);
+    const [selectedId, setSelectedId] = useState(null);
+    const [catatanAdmin, setCatatanAdmin] = useState("");
+
     // State untuk filter
     const [filterData, setFilterData] = useState({
         bulan: filters.bulan || "",
@@ -38,6 +46,12 @@ export default function Index({
 
     // Fungsi untuk update status (Validasi)
     const handleUpdateStatus = (id, newStatus) => {
+        if (newStatus === "Rejected") {
+            setSelectedId(id);
+            setShowRejectModal(true); // Buka modal khusus input catatan
+            return;
+        }
+
         Swal.fire({
             title: `Konfirmasi ${newStatus}?`,
             text: `Apakah Anda yakin ingin mengubah status laporan ini menjadi ${newStatus}?`,
@@ -66,6 +80,29 @@ export default function Index({
                 );
             }
         });
+    };
+
+    // Fungsi untuk handle submit reject modal
+    const handleConfirmReject = () => {
+        router.put(
+            route("admin.laporan.updateStatus", selectedId),
+            {
+                status: "Rejected",
+                catatan_admin: catatanAdmin,
+            },
+            {
+                onSuccess: () => {
+                    Swal.fire(
+                        "Berhasil!",
+                        "Laporan ditolak dan dikembalikan ke koperasi.",
+                        "success",
+                    );
+                    setShowRejectModal(false);
+                    setCatatanAdmin("");
+                    setSelectedId(null);
+                },
+            },
+        );
     };
 
     const columns = [
@@ -285,6 +322,40 @@ export default function Index({
                     <Table columns={columns} items={laporanBulanan} />
                 </div>
             </div>
+
+            <Modal
+                show={showRejectModal}
+                onClose={() => setShowRejectModal(false)}
+            >
+                <div className="p-6">
+                    <h2 className="text-lg font-medium text-gray-900">
+                        Alasan Penolakan
+                    </h2>
+                    <p className="mt-1 text-sm text-gray-600">
+                        Berikan catatan agar koperasi tahu apa yang perlu
+                        diperbaiki.
+                    </p>
+
+                    <textarea
+                        className="mt-4 w-full border-gray-300 rounded-2xl focus:ring-blue-900"
+                        rows="4"
+                        placeholder="Tulis alasan penolakan di sini..."
+                        value={catatanAdmin}
+                        onChange={(e) => setCatatanAdmin(e.target.value)}
+                    />
+
+                    <div className="mt-6 flex justify-end gap-3">
+                        <SecondaryButton
+                            onClick={() => setShowRejectModal(false)}
+                        >
+                            Batal
+                        </SecondaryButton>
+                        <DangerButton onClick={handleConfirmReject}>
+                            Tolak Sekarang
+                        </DangerButton>
+                    </div>
+                </div>
+            </Modal>
         </AdminLayout>
     );
 }
