@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids; // 👈 1. Import UUID
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 class AnggotaKoperasi extends Model
 {
-    use HasFactory, HasUuids; // 👈 2. Pasang Trait UUID
+    use HasFactory, HasUuids, SoftDeletes; // 👈 2. Pasang Trait UUID
 
     // Cukup ini aja, fillable hapus biar gak konflik
     protected $guarded = ['id'];

@@ -1,18 +1,23 @@
 <?php
 
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Enums\LaporanStatus;
 
 
 class LaporanBulanan extends Model
 {
-    use HasFactory,  HasUuids;
+    use HasFactory,  HasUuids, SoftDeletes;
     protected $guarded = ['id'];
 
-    protected $casts = ['total_simpanan_pokok' => 'decimal:2', 'total_simpanan_wajib' => 'decimal:2', 'status' => 'string'];
+    protected $casts = [
+        'total_simpanan_pokok' => 'decimal:2', 
+        'total_simpanan_wajib' => 'decimal:2', 
+        'status' => LaporanStatus::class
+    ];
 
     public function koperasi() {
         return $this->belongsTo(Koperasi::class);

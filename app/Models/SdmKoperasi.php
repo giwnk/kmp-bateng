@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class SdmKoperasi extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory, HasUuids, SoftDeletes;
     protected $guarded = ['id'];
     protected $casts = ['kategori' => 'string', 'jabatan' => 'string', 'status' => 'string', 'tanggal_bergabung' => 'date:Y-m-d'];
     protected $appends = ['foto_url'];
