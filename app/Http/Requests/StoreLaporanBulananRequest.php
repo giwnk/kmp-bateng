@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use App\Enums\LaporanStatus;
 
 class StoreLaporanBulananRequest extends FormRequest
 {
@@ -29,7 +30,7 @@ class StoreLaporanBulananRequest extends FormRequest
             'total_simpanan_pokok' => 'nullable|numeric|min:0',
             'total_pinjaman_wajib' => 'nullable|numeric|min:0',
             'catatan' => 'nullable|string|max:225',
-            'status' => ['nullable', Rule::in(['Draft', 'Submitted','Rejected', 'Approved'])],
+            'status' => ['nullable', new \Illuminate\Validation\Rules\Enum(LaporanStatus::class)],
             'jumlah_anggota_aktif' => 'nullable|integer|min:0',
         ];
     }

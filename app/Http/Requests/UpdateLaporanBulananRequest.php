@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Enums\LaporanStatus;
+use Illuminate\Validation\Rule;
 
 class UpdateLaporanBulananRequest extends FormRequest
 {
@@ -29,7 +31,7 @@ class UpdateLaporanBulananRequest extends FormRequest
             'total_pinjaman_wajib' => 'required|numeric|min:0',
             'total_shu' => 'required|numeric',
             'catatan' => 'nullable|string|max:225',
-            'status' => ['required', Rule::in(['Draft', 'Submitted','Rejected', 'Approved'])],
+            'status' => ['required', new \Illuminate\Validation\Rules\Enum(LaporanStatus::class)],
             'jumlah_anggota_aktif' => 'nullable|integer|min:0',
         ];
     }

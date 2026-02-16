@@ -12,6 +12,7 @@ use App\Models\Transaksi;
 use App\Models\LaporanBulanan; // Pastikan Model Laporan sudah ada/sesuaikan namanya
 use Carbon\Carbon; // Wajib buat urusan tanggal
 use Inertia\Inertia;
+use App\Enums\LaporanStatus;
 
 class DashboardController extends Controller
 {
@@ -54,7 +55,7 @@ class DashboardController extends Controller
                                     ->get(),
 
             'laporan_terbaru'   => LaporanBulanan::with('koperasi')
-                                ->where('status', 'Submitted') // Ambil yang statusnya baru dikirim
+                                ->where('status', LaporanStatus::SUBMITTED) // Ambil yang statusnya baru dikirim
                                 ->latest()
                                 ->take(5)
                                 ->get(),
@@ -77,11 +78,19 @@ class DashboardController extends Controller
         $now = Carbon::now();
 
         // 2. Cek Status Laporan Bulan Ini
-        $laporanBulanIni = LaporanBulanan::where('koperasi_id', $koperasiId)
+        $laporan = LaporanBulanan::where('koperasi_id', $koperasiId)
             ->where('bulan', $now->month)
             ->where('tahun', $now->year)
-            ->where('status', 'Approved')
-            ->exists();
+            ->first();
+
+        $statusLapor = LaporanStatus::DRAFT->label();
+        if ($laporan) {
+            if ($laporan->status === LaporanStatus::APPROVED) {
+                $statusLapor = LaporanStatus::APPROVED->label();
+            } elseif ($laporan->status === LaporanStatus::SUBMITTED) {
+                $statusLapor = LaporanStatus::SUBMITTED->label();
+            }
+        }
 
         // 3. Logika Grafik: Tren Simpanan 6 Bulan Terakhir (Line Chart)
         $chartTrend = Transaksi::select(
@@ -113,7 +122,7 @@ class DashboardController extends Controller
                 'total_saldo'   => Transaksi::where('koperasi_id', $koperasiId)
                                     ->where('jenis_transaksi', '!=', 'Penarikan')
                                     ->sum('jumlah'),
-                'sudah_lapor'   => $laporanBulanIni,
+                'status_lapor'   => $statusLapor,
             ],
             'charts' => [
                 'trend'     => $chartTrend,
