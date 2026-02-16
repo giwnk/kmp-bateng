@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\LaporanStatus;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\LaporanBulanan;
@@ -36,12 +37,11 @@ class LaporanBulananController extends Controller
 
     public function updateStatus(Request $request, LaporanBulanan $laporan){
         $validatedData = $request->validate([
-            'status' => 'required|in:Approved,Rejected,Submitted'
+            'status' => ['required', new \Illuminate\Validation\Rules\Enum(LaporanStatus::class)],
+            'catatan_admin' => 'nullable|string',
         ]);
 
-        $laporan->update([
-            'status' => $validatedData['status']
-        ]);
+        $laporan->update($validatedData);
 
         return back()->with('success', 'Status laporan berhasil diperbarui!');
     }

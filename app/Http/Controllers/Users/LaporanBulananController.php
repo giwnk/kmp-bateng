@@ -11,9 +11,18 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\LaporanBulanan;
 use App\Models\Transaksi;
 use Inertia\Inertia;
+use App\Enums\LaporanStatus;
+use App\Services\LaporanService;
 
 class LaporanBulananController extends Controller
 {
+    protected $laporanService;
+
+    public function __construct(LaporanService $laporanService)
+    {
+        $this->laporanService = $laporanService;
+    }
+
     public function index(Request $request){
         $koperasi = Auth::user()->koperasi;
         $filters = $request->only(['bulan', 'tahun', 'status']);
@@ -22,28 +31,20 @@ class LaporanBulananController extends Controller
         $tahunInput = $request->tahun ?? date('Y');
 
         $statusOptions = [
-            ['value' => 'Draft', 'label' => 'Draft'],
-            ['value' => 'Submitted', 'label' => 'Terkirim'],
-            ['value' => 'Approved', 'label' => 'Disetujui'],
+            ['value' => LaporanStatus::DRAFT->value, 'label' => LaporanStatus::DRAFT->label()],
+            ['value' => LaporanStatus::SUBMITTED->value, 'label' => LaporanStatus::SUBMITTED->label()],
+            ['value' => LaporanStatus::APPROVED->value, 'label' => LaporanStatus::APPROVED->label()],
         ];
 
-        $laporanBulanan = $koperasi->laporanBulanan()->filter($filters)->latest()->paginate(10)->withQueryString();
-        $jumlahAnggotaAktif = $koperasi->anggotaKoperasis()->where('status', 'Aktif')->count();
-        $totalSimpananPokok = Transaksi::whereHas('anggotaKoperasi', function($query) use ($koperasi){
-            $query->where('koperasi_id', $koperasi->id);
-        })->where('jenis_transaksi', 'Simpanan Pokok')->whereMonth('tanggal_transaksi', $bulanInput)->whereYear('tanggal_transaksi', $tahunInput)->sum('jumlah');
-
-        $totalSimpananWajib = Transaksi::whereHas('anggotaKoperasi', function($query) use ($koperasi){
-            $query->where('koperasi_id', $koperasi->id);
-        })->where('jenis_transaksi', 'Simpanan Wajib')->whereMonth('tanggal_transaksi', $bulanInput)->whereYear('tanggal_transaksi', $tahunInput)->sum('jumlah');
+        $stats = $this->laporanService->getMonthlyStats($koperasi->id, $bulanInput, $tahunInput);
 
         return Inertia::render('Koperasi/LaporanBulanan/Index', [
-            'laporanBulanan' => $laporanBulanan,
+            'laporanBulanan' => $koperasi->laporanBulanan()->filter($filters)->latest()->paginate(10)->withQueryString(),
             'filters' => $filters,
-            'jumlahAnggotaAktif' => $jumlahAnggotaAktif,
+            'jumlahAnggotaAktif' => $stats['jumlah_anggota_aktif'],
             'statusOpt' => $statusOptions,
-            'totalSimpananPokok' => $totalSimpananPokok,
-            'totalSimpananWajib' => $totalSimpananWajib,
+            'totalSimpananPokok' => $stats['total_simpanan_pokok'],
+            'totalSimpananWajib' => $stats['total_simpanan_wajib'],
         ]);
     }
 
@@ -55,38 +56,36 @@ class LaporanBulananController extends Controller
         $bulan = $validatedData['bulan'];
         $tahun = $validatedData['tahun'];
 
-        // 1. CEK DUPLIKASI: Jangan sampai satu bulan ada dua laporan
-        $isExists = $koperasi->laporanBulanan()
+        // 1. CEK DUPLIKASI: 
+        $existingLaporan = $koperasi->laporanBulanan()
+            ->withTrashed()
             ->where('bulan', $bulan)
             ->where('tahun', $tahun)
-            ->exists();
+            ->first();
 
-        if ($isExists) {
-            return back()->withErrors(['bulan' => "Laporan untuk periode $bulan/$tahun sudah pernah dibuat!"]);
+        if ($existingLaporan) {
+            if ($existingLaporan->trashed()) {
+                // Jika sudah dihapus, kita hapus permanen agar bisa buat baru (menghindari duplicate entry di DB)
+                $existingLaporan->forceDelete();
+            } else {
+                // Jika masih aktif, baru tampilkan error
+                return back()->withErrors(['bulan' => "Laporan untuk periode $bulan/$tahun sudah pernah dibuat!"]);
+            }
         }
 
         // Di dalam function store:
         return DB::transaction(function () use ($koperasi, $validatedData, $bulan, $tahun) {
+            $stats = $this->laporanService->getMonthlyStats($koperasi->id, $bulan, $tahun);
+            
             $dataLaporan = [
                 'koperasi_id'          => $koperasi->id,
                 'bulan'                => $bulan,
                 'tahun'                => $tahun,
-                'jumlah_anggota_aktif' => $koperasi->anggotaKoperasis()->where('status', 'Aktif')->count(),
-
-                'total_simpanan_pokok' => Transaksi::whereHas('anggotaKoperasi', fn($q) => $q->where('koperasi_id', $koperasi->id))
-                    ->where('jenis_transaksi', 'Simpanan Pokok')
-                    ->whereMonth('tanggal_transaksi', $bulan)
-                    ->whereYear('tanggal_transaksi', $tahun)
-                    ->sum('jumlah'),
-
-                'total_simpanan_wajib' => Transaksi::whereHas('anggotaKoperasi', fn($q) => $q->where('koperasi_id', $koperasi->id))
-                    ->where('jenis_transaksi', 'Simpanan Wajib')
-                    ->whereMonth('tanggal_transaksi', $bulan)
-                    ->whereYear('tanggal_transaksi', $tahun)
-                    ->sum('jumlah'),
-
-                'catatan' => $validatedData['catatan'] ?? null, // Sekarang sudah sinkron
-                'status'  => 'Draft',
+                'jumlah_anggota_aktif' => $stats['jumlah_anggota_aktif'],
+                'total_simpanan_pokok' => $stats['total_simpanan_pokok'],
+                'total_simpanan_wajib' => $stats['total_simpanan_wajib'],
+                'catatan' => $validatedData['catatan'] ?? null,
+                'status'  => LaporanStatus::SUBMITTED,
             ];
 
             $koperasi->laporanBulanan()->create($dataLaporan);
@@ -100,7 +99,7 @@ class LaporanBulananController extends Controller
         if ($laporan->koperasi_id !== $koperasi->id) {
             abort(403);
         }
-        if (in_array($laporan->status, ['Submitted', 'Approved'])) {
+        if (in_array($laporan->status, [LaporanStatus::SUBMITTED, LaporanStatus::APPROVED])) {
             return back()->withErrors([
                 'message' => 'Laporan yang sudah terkirim atau disetujui tidak dapat dihapus!'
             ]);
@@ -108,14 +107,11 @@ class LaporanBulananController extends Controller
         $validatedData = $request->validated();
         $bulan = $validatedData['bulan'];
         $tahun = $validatedData['tahun'];
-        $validatedData['jumlah_anggota_aktif'] = $koperasi->anggotaKoperasis()
-        ->where('status', 'Aktif')
-        ->count();
-
-        $validatedData['simpanan_pokok'] = Transaksi::whereHas('anggotaKoperasi', fn($q) => $q->where('koperasi_id', $koperasi->id))
-            ->where('jenis_transaksi', 'Simpanan Pokok')->whereMonth('tanggal_transaksi', $bulan)->whereYear('tanggal_transaksi', $tahun)->sum('jumlah');
-        $validatedData['simpanan_wajib'] = Transaksi::whereHas('anggotaKoperasi', fn($q) => $q->where('koperasi_id', $koperasi->id))
-            ->where('jenis_transaksi', 'Simpanan Wajib')->whereMonth('tanggal_transaksi', $bulan)->whereYear('tanggal_transaksi', $tahun)->sum('jumlah');
+        $stats = $this->laporanService->getMonthlyStats($koperasi->id, $bulan, $tahun);
+        
+        $validatedData['jumlah_anggota_aktif'] = $stats['jumlah_anggota_aktif'];
+        $validatedData['total_simpanan_pokok'] = $stats['total_simpanan_pokok'];
+        $validatedData['total_simpanan_wajib'] = $stats['total_simpanan_wajib'];
 
         $laporan->update($validatedData);
         return back()->with('success', 'Laporan berhasil diperbarui');
@@ -127,7 +123,7 @@ class LaporanBulananController extends Controller
             abort(403);
         }
 
-        if (in_array($laporan->status, ['Submitted', 'Approved'])) {
+        if (in_array($laporan->status, [LaporanStatus::SUBMITTED, LaporanStatus::APPROVED])) {
             return back()->withErrors([
                 'message' => 'Laporan yang sudah terkirim atau disetujui tidak dapat dihapus!'
             ]);
